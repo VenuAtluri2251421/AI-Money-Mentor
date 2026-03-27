@@ -1,0 +1,38 @@
+[PASS] GET /health 200
+[PASS] /health status:ok
+[PASS] POST /tax/compare 200 | {"old_regime":{"regime":"old","gross_income":1275000.0,"standard_deduction":5000
+[PASS] 12.75L new regime tax=0 | 0.0
+[PASS] recommended key exists | dict_keys(['old_regime', 'new_regime', 'recommended', 'savings'])
+[PASS] 15L new regime tax=97500 | 97500.0
+[PASS] POST /sip 200
+[PASS] /sip maturity_amount
+[PASS] POST /fire 200
+[PASS] /fire fire_number | 15000000.0
+[PASS] POST /health 200 | {"overall_score":91.0,"grade":"Excellent","dimensions":[{"name":"emergency_fund","score":100,"max_score":100,"pct":100,"
+[PASS] /health 6 dimensions | got 6: ['emergency_fund', 'insurance', 'debt', 'investment_diversification', 'tax_efficiency', 'retirement_readiness']
+[PASS] /health overall_score | 91.0
+[PASS] /health grade | Excellent
+[PASS]   dim:emergency_fund
+[PASS]   dim:insurance
+[PASS]   dim:debt
+[PASS]   dim:investment_diversification
+[PASS]   dim:tax_efficiency
+[PASS]   dim:retirement_readiness
+[PASS] POST /portfolio/xirr 200
+[PASS] /xirr ~12% | 12.0
+[PASS] POST /advisor/extract 200
+[FAIL] extract age=28 | None
+[FAIL] extract retirement_age=50 | None
+[PASS] POST /advisor/context 200
+[PASS] context non-empty
+[PASS] POST /advisor/explain 200
+[PASS] explain non-empty | 73
+[PASS] POST /advisor/chat 200
+[PASS] chat reply non-empty
+[PASS] GET /docs 200 (Swagger)
+
+SUMMARY: 30 passed, 2 failed
+
+FAILED:
+  [FAIL] extract age=28 | None
+  [FAIL] extract retirement_age=50 | None

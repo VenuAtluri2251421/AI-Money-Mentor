@@ -1,0 +1,13 @@
+
+[1] Server health
+Traceback (most recent call last):
+  File "D:\AI advisor Backend\e2e_test.py", line 31, in <module>
+    check("GET /health \u2192 200", r.status_code == 200)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\AI advisor Backend\e2e_test.py", line 17, in check
+    print(f"  \u2705 {name}")
+    ~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\kbhas\anaconda3\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2705' in position 2: character maps to <undefined>
