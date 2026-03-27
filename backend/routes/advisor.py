@@ -12,7 +12,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -22,10 +22,12 @@ class LenientModel(BaseModel):
 
 from ai.advisor import (
     chat_with_advisor,
+    chat_with_advisor_stream,
     extract_profile_from_text,
     explain_insight,
 )
 from ai.context import build_user_context
+from backend.rate_limit import advisor_rate_limit
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/advisor", tags=["AI Advisor (Artha)"])
@@ -53,7 +55,8 @@ class ChatResponse(BaseModel):
     response: str
 
 
-@router.post("/chat", response_model=ChatResponse, summary="Chat with Artha — AI Finance Advisor")
+@router.post("/chat", response_model=ChatResponse, summary="Chat with Artha — AI Finance Advisor",
+             dependencies=[Depends(advisor_rate_limit)])
 async def advisor_chat(req: ChatRequest) -> ChatResponse:
     """
     Send a message to Artha. On any API failure returns a graceful HTTP 200 fallback
@@ -77,7 +80,8 @@ class ExtractRequest(LenientModel):
     text: str = Field(..., min_length=1, description="Free-form text describing the user's finances")
 
 
-@router.post("/extract", summary="Extract Financial Profile from Natural Language")
+@router.post("/extract", summary="Extract Financial Profile from Natural Language",
+             dependencies=[Depends(advisor_rate_limit)])
 async def advisor_extract(req: ExtractRequest) -> dict[str, Any]:
     """
     Parse free-form text and return a structured financial profile.
@@ -113,7 +117,8 @@ class ExplainResponse(BaseModel):
     explanation: str
 
 
-@router.post("/explain", response_model=ExplainResponse, summary="Explain a Financial Insight")
+@router.post("/explain", response_model=ExplainResponse, summary="Explain a Financial Insight",
+             dependencies=[Depends(advisor_rate_limit)])
 async def advisor_explain(req: ExplainRequest) -> ExplainResponse:
     """
     Generate a plain-English (under 150 words) explanation of a financial insight.
@@ -151,6 +156,7 @@ class ContextResponse(BaseModel):
     "/context",
     response_model=ContextResponse,
     summary="Build Formatted User Context String",
+    dependencies=[Depends(advisor_rate_limit)],
 )
 async def advisor_context(req: ContextRequest) -> ContextResponse:
     """
@@ -164,3 +170,34 @@ async def advisor_context(req: ContextRequest) -> ContextResponse:
         logger.error("advisor_context error: %s", exc)
         ctx = "User context unavailable."
     return ContextResponse(context=ctx)
+
+
+# ── /chat/stream ────────────────────────────────────────────────────────────────
+
+from fastapi.responses import StreamingResponse
+
+
+@router.post(
+    "/chat/stream",
+    summary="Streaming chat with Artha (SSE)",
+    dependencies=[Depends(advisor_rate_limit)],
+)
+async def advisor_chat_stream(req: ChatRequest):
+    """
+    Server-Sent Events streaming version of /advisor/chat.
+    Each Gemini chunk is sent as an SSE `data:` line.
+    """
+    async def event_generator():
+        try:
+            for chunk in chat_with_advisor_stream(
+                message=req.message,
+                user_context=req.user_context,
+                conversation_history=req.conversation_history,
+            ):
+                yield f"data: {chunk}\n\n"
+        except Exception as exc:
+            logger.error("advisor_chat_stream error: %s", exc)
+            yield f"data: I'm having trouble connecting right now. Please try again.\n\n"
+        yield "data: [DONE]\n\n"
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")

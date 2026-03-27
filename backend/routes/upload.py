@@ -6,8 +6,9 @@ but encrypted/scanned PDFs will fail silently (we log and return partial results
 We deliberately never raise 422 on partial extraction — the caller gets whatever
 we could parse plus a parse_errors list to show the user what went wrong.
 
-FIXME: Encrypted PDFs (common with brokerage statements) need a password unlock
-       step. pdfplumber supports passwords but we'd need users to supply them.
+FIXME (resolved): Encrypted PDFs now accept an optional password parameter.
+       pdfplumber.open(password=...) handles the unlock. If password is needed
+       but not provided, we return a structured {"password_required": true} response.
 """
 from __future__ import annotations
 
@@ -17,7 +18,7 @@ import re
 from datetime import datetime
 from typing import Any
 
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/upload", tags=["File Upload & Parsing"])
@@ -111,10 +112,14 @@ def _parse_kfintech_row(cols: list[str]) -> dict | None:
 
 
 @router.post("/form16", summary="Parse Form 16 PDF and extract tax fields")
-async def upload_form16(file: UploadFile = File(...)) -> dict[str, Any]:
+async def upload_form16(
+    file: UploadFile = File(...),
+    password: str | None = Form(None, description="PDF password (for encrypted files)"),
+) -> dict[str, Any]:
     """
     Accept Form 16 Part B PDF. Returns extracted tax figures + any parse errors.
     Missing fields are None — check missing_fields list before trusting the output.
+    If the PDF is encrypted and no password is provided, returns password_required=true.
     """
     pdfplumber = _import_pdfplumber()
 
@@ -127,7 +132,7 @@ async def upload_form16(file: UploadFile = File(...)) -> dict[str, Any]:
     parse_errors: list[dict] = []
 
     try:
-        with pdfplumber.open(io.BytesIO(contents)) as pdf:
+        with pdfplumber.open(io.BytesIO(contents), password=password) as pdf:
             for i, page in enumerate(pdf.pages):
                 try:
                     all_text += (page.extract_text() or "") + "\n"
@@ -135,6 +140,12 @@ async def upload_form16(file: UploadFile = File(...)) -> dict[str, Any]:
                     logger.warning("Form16: failed to extract text from page %d: %s", i + 1, exc)
                     parse_errors.append({"page": i + 1, "reason": str(exc)})
     except Exception as exc:
+        exc_str = str(exc).lower()
+        if "password" in exc_str or "encrypted" in exc_str:
+            return {
+                "password_required": True,
+                "detail": "This PDF is password-protected. Please provide the password.",
+            }
         logger.error("Form16: pdfplumber could not open PDF from %s: %s", file.filename, exc)
         raise HTTPException(status_code=422, detail=f"Cannot open PDF: {exc}")
 
@@ -157,10 +168,14 @@ async def upload_form16(file: UploadFile = File(...)) -> dict[str, Any]:
 
 
 @router.post("/cams-statement", summary="Parse CAMS/KFintech Statement PDF")
-async def upload_cams_statement(file: UploadFile = File(...)) -> dict[str, Any]:
+async def upload_cams_statement(
+    file: UploadFile = File(...),
+    password: str | None = Form(None, description="PDF password (for encrypted files)"),
+) -> dict[str, Any]:
     """
     Parse a CAMS or KFintech consolidated account statement PDF.
     Auto-detects format from page 1-3 headers. Returns transactions list + parse errors.
+    If the PDF is encrypted and no password is provided, returns password_required=true.
     """
     pdfplumber = _import_pdfplumber()
 
@@ -177,7 +192,7 @@ async def upload_cams_statement(file: UploadFile = File(...)) -> dict[str, Any]:
     _HEADER_KEYWORDS = {"date", "fund name", "nav", "amount", "description", "transaction date"}
 
     try:
-        with pdfplumber.open(io.BytesIO(contents)) as pdf:
+        with pdfplumber.open(io.BytesIO(contents), password=password) as pdf:
             for i, page in enumerate(pdf.pages):
                 try:
                     page_text = page.extract_text() or ""
@@ -209,6 +224,12 @@ async def upload_cams_statement(file: UploadFile = File(...)) -> dict[str, Any]:
                     parse_errors.append({"page": i + 1, "reason": str(exc)})
 
     except Exception as exc:
+        exc_str = str(exc).lower()
+        if "password" in exc_str or "encrypted" in exc_str:
+            return {
+                "password_required": True,
+                "detail": "This PDF is password-protected. Please provide the password.",
+            }
         logger.error("CAMS: pdfplumber could not open PDF from %s: %s", file.filename, exc)
         raise HTTPException(status_code=422, detail=f"Cannot open PDF: {exc}")
 

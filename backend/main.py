@@ -19,6 +19,9 @@ from backend.db import close_db, init_db
 from backend.routes.calculate import router as calc_router
 from backend.routes.advisor import router as advisor_router
 from backend.routes.upload import router as upload_router
+from backend.routes.auth import router as auth_router
+from backend.routes.profile import router as profile_router
+from backend.routes.portfolio import router as portfolio_router
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -54,9 +57,12 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    app.include_router(auth_router, prefix="/api/v1")
     app.include_router(calc_router, prefix="/api/v1")
     app.include_router(advisor_router, prefix="/api/v1")
     app.include_router(upload_router, prefix="/api/v1")
+    app.include_router(profile_router, prefix="/api/v1")
+    app.include_router(portfolio_router, prefix="/api/v1")
 
     @app.get("/health", tags=["System"])
     async def health_check():

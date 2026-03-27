@@ -31,14 +31,17 @@ settings = get_settings()
 
 # pool_pre_ping catches stale connections after Supabase's idle-timeout drops them.
 # echo=True only in local dev — Supabase has its own query logging.
+engine_kwargs = {"echo": settings.debug, "future": True}
+
+if not settings.database_url.startswith("sqlite"):
+    engine_kwargs["pool_pre_ping"] = True
+    # Supabase Postgres works best with a small pool on the free tier (max 20 conns shared).
+    engine_kwargs["pool_size"] = 5 if settings.using_supabase else 10
+    engine_kwargs["max_overflow"] = 5
+
 engine = create_async_engine(
     settings.database_url,
-    echo=settings.debug,
-    future=True,
-    pool_pre_ping=True,
-    # Supabase Postgres works best with a small pool on the free tier (max 20 conns shared).
-    pool_size=5 if settings.using_supabase else 10,
-    max_overflow=5,
+    **engine_kwargs
 )
 
 AsyncSessionLocal = async_sessionmaker(
@@ -73,13 +76,14 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 async def init_db() -> None:
     """
-    Create all tables at startup (dev/staging only).
-    In production, prefer Alembic migrations over this — create_all is not safe
-    once you have real data and schema changes that need ordering.
-
-    TODO: Wire up Alembic before going to production on Supabase.
+    Create all tables at startup in development only.
+    In production, use Alembic migrations: ``alembic upgrade head``
     """
     from backend.models import orm  # noqa: F401 — imports register ORM models with Base
+
+    if settings.app_env != "development":
+        logger.info("Skipping create_all in %s — use 'alembic upgrade head' instead", settings.app_env)
+        return
 
     try:
         async with engine.begin() as conn:

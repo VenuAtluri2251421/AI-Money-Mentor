@@ -1,0 +1,310 @@
+/* ── Landing Page Specific Styles ── */
+.landing-page {
+  position: relative;
+  min-height: 100vh;
+  /* Very dark navy background */
+  background: #060913; 
+  color: #F8FAFC;
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── Canvas Background ── */
+.landing-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  opacity: 0.6; /* Subtle particle effect */
+  pointer-events: none;
+}
+
+/* ── Navbar ── */
+.landing-nav {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 4rem;
+  background: transparent;
+}
+
+.landing-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+/* ── Hero Section ── */
+.landing-content {
+  position: relative;
+  z-index: 5;
+  padding-bottom: 8rem;
+}
+
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8rem 2rem 10rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(22, 163, 74, 0.15);
+  border: 1px solid rgba(22, 163, 74, 0.3);
+  padding: 8px 16px;
+  border-radius: 9999px;
+  color: #4ADE80;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  animation: fadeIn 0.8s ease both;
+}
+
+.pulse-green {
+  width: 8px; height: 8px;
+  background: #4ADE80;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #4ADE80;
+  animation: float 3s infinite ease-in-out;
+}
+
+.hero-title {
+  /* Using an elegant serif font */
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  margin-bottom: 1.5rem;
+  animation: fadeIn 0.8s 0.2s ease both;
+}
+
+.text-dinero-green {
+  color: #16A34A; /* Brand green */
+  text-shadow: 0 0 40px rgba(22, 163, 74, 0.4);
+}
+
+.hero-subtitle {
+  font-size: 1.15rem;
+  color: #94A3B8;
+  max-width: 600px;
+  line-height: 1.6;
+  margin-bottom: 3rem;
+  animation: fadeIn 0.8s 0.4s ease both;
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 16px;
+  animation: fadeIn 0.8s 0.6s ease both;
+}
+
+.btn-glow {
+  position: relative;
+  box-shadow: 0 0 24px rgba(37, 99, 235, 0.5);
+}
+
+.btn-outline-glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+.btn-outline-glass:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Feature Showcase ── */
+.features-showcase {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8rem;
+  padding: 0 2rem;
+}
+
+.feature-row {
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+}
+
+.feature-row.reverse {
+  flex-direction: row-reverse;
+}
+
+.feature-text {
+  flex: 1;
+  max-width: 480px;
+}
+
+.feature-visual {
+  flex: 1;
+  height: 380px;
+  border-radius: 24px;
+  background: #0E1424; /* Darker card background */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.module-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+.module-orange { background: rgba(249, 115, 22, 0.1); color: #F97316; }
+.module-green { background: rgba(22, 163, 74, 0.1); color: #4ADE80; }
+
+.feature-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.4rem;
+  margin-bottom: 1rem;
+}
+.text-orange-serif { color: #F97316; }
+.text-green-serif { color: #4ADE80; }
+
+.text-orange { color: #FBBF24; font-weight: 600; }
+.text-green { color: #4ADE80; font-weight: 600; }
+
+.feature-desc {
+  color: #94A3B8;
+  font-size: 1.05rem;
+  margin-bottom: 2rem;
+}
+.feature-link {
+  display: inline-flex;
+  gap: 6px;
+}
+
+/* ── Pure CSS Chart Mockup (Module 1) ── */
+.mock-chart-container {
+  width: 80%;
+  height: 60%;
+  position: relative;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-left: 1px solid rgba(255,255,255,0.1);
+}
+
+.chart-line-orange {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%; height: 100%;
+  background: transparent;
+  border-top: 3px solid #F97316;
+  border-right: 3px solid #F97316;
+  border-top-right-radius: 100%;
+  transform-origin: bottom left;
+}
+
+.chart-fade-orange {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, rgba(249,115,22,0.4) 0%, rgba(249,115,22,0) 80%);
+  border-top-right-radius: 100%;
+  clip-path: polygon(0 100%, 0 0, 100% 0, 100% 100%);
+}
+
+.play-button-overlay {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px; height: 80px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 0 32px rgba(0,0,0,0.5);
+  transition: transform 0.3s;
+}
+.play-button-overlay:hover { transform: translate(-50%, -50%) scale(1.1); }
+
+.play-triangle {
+  width: 0; height: 0;
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+  border-left: 18px solid #fff;
+  margin-left: 4px;
+}
+
+/* ── Pure CSS Circle Progress Mockup (Module 2) ── */
+.health-circle-wrapper {
+  position: relative;
+  width: 220px;
+  height: 220px;
+}
+
+.health-circle {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.health-circle .track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.05);
+  stroke-width: 8;
+}
+
+.health-circle .progress {
+  fill: none;
+  stroke: #16A34A;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 251.2; /* 2 * pi * 40 */
+  stroke-dashoffset: 55.2; /* 78% progress */
+}
+
+.health-circle-text {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.health-circle-text .score { font-size: 3rem; font-weight: 800; color: #fff; line-height: 1; }
+.health-circle-text .outof { font-size: 0.8rem; color: #64748B; margin-top: 4px; }
+
+.health-status {
+  position: absolute;
+  bottom: 24px;
+  background: rgba(22, 163, 74, 0.1);
+  color: #4ADE80;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .feature-row, .feature-row.reverse { flex-direction: column; gap: 3rem; }
+  .hero-title { font-size: 2.5rem; }
+  .landing-nav { padding: 1.5rem 1.5rem; }
+}

@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dinero — Your Personal Finance Mentor</title>
+<meta name="description" content="Dinero is your AI-powered personal finance mentor — FIRE planning, tax optimization, portfolio X-ray, and more for everyday Indians."/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+/* ── Reset ───────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;cursor:none!important;}
+html{scroll-behavior:smooth;}
+body{
+  background:#080d24;
+  color:#f0f4ff;
+  font-family:'DM Sans',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  cursor:none;
+}
+h1,h2,h3,.serif{font-family:'Fraunces',serif;}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;}
+
+/* ── Custom Cursor ───────────────────────────────────────── */
+#cursor-dot{
+  position:fixed;
+  width:8px;height:8px;
+  border-radius:50%;
+  background:#fff;
+  mix-blend-mode:difference;
+  pointer-events:none;
+  z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:width .15s,height .15s,background .15s;
+}
+#cursor-ring{
+  position:fixed;
+  width:36px;height:36px;
+  border-radius:50%;
+  border:1.5px solid rgba(255,255,255,0.7);
+  pointer-events:none;
+  z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:width .2s,height .2s,border-color .2s;
+}
+body.cursor-hover #cursor-dot{width:12px;height:12px;background:#22C55E;}
+body.cursor-hover #cursor-ring{width:52px;height:52px;border-color:rgba(34,197,94,0.6);}
+
+/* ── Fireflies ───────────────────────────────────────────── */
+.firefly{
+  position:fixed;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:9990;
+  opacity:0;
+  transition:opacity .6s;
+}
+
+/* ── Navbar ──────────────────────────────────────────────── */
+#navbar{
+  position:fixed;top:0;left:0;right:0;
+  z-index:1000;
+  height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;
+  background:rgba(8,13,36,0.7);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(240,244,255,0.07);
+}
+.nav-logo{display:flex;align-items:center;gap:10px;}
+.nav-logo-icon{
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;font-weight:800;color:#fff;
+  font-family:'DM Sans',sans-serif;
+  letter-spacing:-0.02em;
+}
+.nav-logo-text{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:700;letter-spacing:-0.02em;color:#f0f4ff;}
+.btn-signin{
+  background:#3B6EEA;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  padding:8px 20px;
+  font-family:'DM Sans',sans-serif;
+  font-size:0.85rem;
+  font-weight:600;
+  transition:background .2s,transform .15s,box-shadow .2s;
+  box-shadow:0 0 0 rgba(59,110,234,0);
+}
+.btn-signin:hover{background:#2a5ad4;transform:translateY(-1px);box-shadow:0 4px 20px rgba(59,110,234,0.45);}
+
+/* ── Hero ────────────────────────────────────────────────── */
+#hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;
+  overflow:hidden;
+  padding:80px 24px 60px;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% -10%, rgba(59,110,234,0.35) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 45% at -10% 100%, rgba(34,197,94,0.2) 0%, transparent 60%),
+    #080d24;
+  z-index:0;
+}
+/* Hero bottom blend */
+.hero-fade-bottom{
+  position:absolute;bottom:0;left:0;right:0;
+  height:160px;
+  background:linear-gradient(to bottom, transparent, #080d24);
+  z-index:4;
+  pointer-events:none;
+}
+.hero-field-lines{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;}
+.field-layer{position:absolute;inset:0;will-change:transform;transition:transform .08s linear;}
+.hero-content{position:relative;z-index:3;text-align:center;max-width:680px;}
+
+/* Trust badge */
+.trust-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(34,197,94,0.08);
+  border:1px solid rgba(34,197,94,0.25);
+  border-radius:9999px;
+  padding:6px 16px;
+  font-size:0.8rem;font-weight:500;
+  color:rgba(34,197,94,0.9);
+  margin-bottom:28px;
+}
+.pulse-dot{
+  width:7px;height:7px;border-radius:50%;background:#22C55E;
+  animation:pulseDot 1.8s ease-in-out infinite;
+}
+@keyframes pulseDot{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.5);}50%{box-shadow:0 0 0 6px rgba(34,197,94,0);}}
+
+/* Headline */
+.hero-h1{
+  font-family:'Fraunces',serif;
+  font-size:clamp(2.8rem,6vw,5.2rem);
+  font-weight:800;
+  line-height:1.08;
+  letter-spacing:-0.04em;
+  color:#f0f4ff;
+  margin-bottom:20px;
+}
+.hero-h1 .green{color:#22C55E;}
+.hero-sub{
+  font-size:clamp(1rem,2vw,1.15rem);
+  color:rgba(240,244,255,0.52);
+  line-height:1.7;
+  max-width:440px;
+  margin:0 auto 36px;
+}
+
+/* CTA */
+.hero-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:60px;}
+.btn-primary{
+  background:#3B6EEA;
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  padding:14px 28px;
+  font-family:'DM Sans',sans-serif;
+  font-size:0.95rem;font-weight:600;
+  box-shadow:0 0 28px rgba(59,110,234,0.45);
+  transition:all .2s;
+}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 4px 40px rgba(59,110,234,0.65);}
+.btn-ghost{
+  background:transparent;
+  color:rgba(240,244,255,0.75);
+  border:1.5px solid rgba(240,244,255,0.18);
+  border-radius:10px;
+  padding:14px 28px;
+  font-family:'DM Sans',sans-serif;
+  font-size:0.95rem;font-weight:500;
+  transition:all .2s;
+}
+.btn-ghost:hover{background:rgba(240,244,255,0.05);border-color:rgba(240,244,255,0.35);}
+
+/* Click ripple */
+.ripple-effect{
+  position:absolute;
+  border:2px solid rgba(59,110,234,0.7);
+  border-radius:50%;
+  pointer-events:none;
+  transform:translate(-50%,-50%) scale(0);
+  animation:rippleOut .9s ease-out forwards;
+  z-index:4;
+}
+@keyframes rippleOut{
+  0%{width:0;height:0;opacity:.9;transform:translate(-50%,-50%) scale(1);}
+  100%{width:260px;height:260px;opacity:0;transform:translate(-50%,-50%) scale(1);}
+}
+
+/* ── Particle Net Canvas ─────────────────────────────────── */
+.pnet-wrap{
+  position:absolute;inset:0;z-index:2;
+  pointer-events:none;overflow:hidden;
+}
+#pnet-canvas{display:block;width:100%;height:100%;}
+
+/* ── Dark→Green→White Bridge & Features wrap ─────────────── */
+.section-sep{display:none;} /* hidden — bridge replaces it */
+.features-bridge{
+  height:160px;
+  background:linear-gradient(to bottom, #080d24 0%, rgba(34,197,94,0.18) 55%, #F0F4FF 100%);
+}
+.features-wrap{
+  background:#F0F4FF;
+  padding-bottom:80px;
+  margin:0;
+  max-width:100%;
+  position:relative;
+}
+.features-inner{max-width:1100px;margin:0 auto;}
+
+/* ── Feature Sections (white theme) ────────────────────── */
+.feature-section{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:80px;align-items:center;
+  padding:80px 64px;
+  position:relative;overflow:hidden;
+  opacity:0;transform:translateY(50px);
+  transition:opacity .85s cubic-bezier(.16,1,.3,1),transform .85s cubic-bezier(.16,1,.3,1);
+  margin:28px 0;border-radius:28px;
+}
+/* Alternating white/off-white BG */
+.feature-section:nth-child(odd){
+  background:#FFFFFF;
+  box-shadow:0 2px 40px rgba(59,110,234,0.06),0 1px 8px rgba(0,0,0,0.04);
+}
+.feature-section:nth-child(even){
+  background:#EEF2FF;
+  box-shadow:0 2px 40px rgba(34,197,94,0.07),0 1px 8px rgba(0,0,0,0.04);
+}
+.feature-section.visible{opacity:1;transform:translateY(0);}
+.feature-section.reverse{direction:rtl;}
+.feature-section.reverse > *{direction:ltr;}
+
+/* Giant watermark module numbers behind content */
+.feature-section::before{
+  font-family:'Fraunces',serif;
+  font-size:clamp(11rem,17vw,16rem);
+  font-weight:800;
+  position:absolute;top:-2rem;right:2rem;
+  line-height:1;
+  pointer-events:none;z-index:0;
+  letter-spacing:-0.06em;
+  background:linear-gradient(135deg, #3B6EEA 0%, #22C55E 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  opacity:0.06;
+}
+#fs1::before{content:'01';}
+#fs2::before{content:'02';}
+#fs3::before{content:'03';}
+#fs4::before{content:'04';}
+#fs5::before{content:'05';}
+#fs6::before{content:'06';}
+
+/* Left accent bar override for even/odd */
+.feature-section.reverse::before{right:auto;left:2rem;}
+
+/* Text stagger */
+.feature-text{
+  display:flex;flex-direction:column;gap:18px;
+  position:relative;z-index:1;
+}
+.reveal-item{opacity:0;transform:translateY(28px);transition:opacity .65s cubic-bezier(.16,1,.3,1),transform .65s cubic-bezier(.16,1,.3,1);}
+.reveal-item.shown{opacity:1;transform:translateY(0);}
+
+/* Module tag */
+.module-tag{
+  display:inline-flex;align-items:center;
+  border-radius:9999px;
+  padding:5px 16px;
+  font-size:0.72rem;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;
+  width:fit-content;position:relative;overflow:hidden;
+}
+.module-tag .tag-shine{
+  position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.40) 50%,transparent 100%);
+  transform:translateX(-120%);pointer-events:none;
+}
+.module-tag.shining .tag-shine{animation:tagShine .75s ease .1s forwards;}
+@keyframes tagShine{from{transform:translateX(-120%);}to{transform:translateX(120%);}}
+
+/* Scramble headline — JS adds chars, CSS makes them buttery */
+.feature-h2{
+  font-family:'Fraunces',serif;
+  font-size:clamp(1.8rem,3vw,2.5rem);
+  font-weight:800;line-height:1.1;letter-spacing:-0.03em;
+  color:#0A0F2C;
+  position:relative;z-index:1;
+}
+/* Each scramble char */
+.scr-char{display:inline-block;transition:color .06s,opacity .1s;}
+.scr-char.scrambling{color:#22C55E;opacity:0.6;}
+
+.feature-desc{
+  color:rgba(10,15,44,0.58);
+  font-size:0.97rem;line-height:1.85;
+  position:relative;z-index:1;
+}
+
+/* Explore link */
+.feature-link{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:0.88rem;font-weight:700;
+  margin-top:4px;width:fit-content;position:relative;z-index:1;
+  padding:9px 20px;
+  border-radius:9999px;
+  border:1.5px solid currentColor;
+  transition:background .2s,color .2s,transform .2s,box-shadow .2s;
+}
+.feature-link:hover{
+  background:currentColor;
+  box-shadow:0 4px 20px rgba(0,0,0,0.15);
+  transform:translateY(-2px);
+}
+.feature-link:hover .link-text,.feature-link:hover .arrow{color:#fff;-webkit-text-fill-color:#fff;}
+.feature-link .link-text,.feature-link .arrow{transition:color .2s;}
+.feature-link .arrow{display:inline-block;transition:transform .32s cubic-bezier(.34,1.56,.64,1),color .2s;}
+.feature-link:hover .arrow{transform:translateX(5px);}
+
+.feature-visual{display:flex;align-items:center;justify-content:center;position:relative;z-index:1;}
+
+/* Visual card — WHITE, sculpted shadow */
+.visual-card{
+  background:#FFFFFF;
+  border:none;
+  border-radius:28px;
+  padding:36px;
+  width:100%;max-width:400px;
+  position:relative;overflow:hidden;
+  transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s ease;
+}
+#fs1 .visual-card{box-shadow:0 8px 0 rgba(245,158,11,0.18),0 16px 60px rgba(245,158,11,0.1),0 2px 24px rgba(0,0,0,0.07);}
+#fs2 .visual-card{box-shadow:0 8px 0 rgba(20,184,166,0.18),0 16px 60px rgba(20,184,166,0.1),0 2px 24px rgba(0,0,0,0.07);}
+#fs3 .visual-card{box-shadow:0 8px 0 rgba(129,140,248,0.18),0 16px 60px rgba(129,140,248,0.1),0 2px 24px rgba(0,0,0,0.07);}
+#fs4 .visual-card{box-shadow:0 8px 0 rgba(251,113,133,0.18),0 16px 60px rgba(251,113,133,0.1),0 2px 24px rgba(0,0,0,0.07);}
+#fs5 .visual-card{box-shadow:0 8px 0 rgba(52,211,153,0.18),0 16px 60px rgba(52,211,153,0.1),0 2px 24px rgba(0,0,0,0.07);}
+#fs6 .visual-card{box-shadow:0 8px 0 rgba(167,139,250,0.18),0 16px 60px rgba(167,139,250,0.1),0 2px 24px rgba(0,0,0,0.07);}
+/* Hover lift */
+.visual-card:hover{transform:perspective(900px) rotateX(-3deg) rotateY(3deg) translateY(-10px);}
+#fs1 .visual-card:hover{box-shadow:0 24px 80px rgba(245,158,11,0.2),0 2px 24px rgba(0,0,0,0.07);}
+#fs2 .visual-card:hover{box-shadow:0 24px 80px rgba(20,184,166,0.2),0 2px 24px rgba(0,0,0,0.07);}
+#fs3 .visual-card:hover{box-shadow:0 24px 80px rgba(129,140,248,0.2),0 2px 24px rgba(0,0,0,0.07);}
+#fs4 .visual-card:hover{box-shadow:0 24px 80px rgba(251,113,133,0.2),0 2px 24px rgba(0,0,0,0.07);}
+#fs5 .visual-card:hover{box-shadow:0 24px 80px rgba(52,211,153,0.2),0 2px 24px rgba(0,0,0,0.07);}
+#fs6 .visual-card:hover{box-shadow:0 24px 80px rgba(167,139,250,0.2),0 2px 24px rgba(0,0,0,0.07);}
+
+/* Card shimmer entry */
+.visual-card .card-shimmer{
+  position:absolute;inset:0;
+  background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,0.85) 50%,transparent 70%);
+  transform:translateX(-130%);pointer-events:none;z-index:1;
+}
+.feature-section.visible .visual-card .card-shimmer{
+  animation:shimmerSweep .85s ease-out .2s forwards;
+}
+@keyframes shimmerSweep{from{transform:translateX(-130%);}to{transform:translateX(130%);}}
+
+/* Accent top stripe on card (color band at top) */
+.visual-card .card-accent-line{
+  position:absolute;top:0;left:0;right:0;
+  height:3px;border-radius:28px 28px 0 0;
+  z-index:3;
+}
+#fs1 .card-accent-line{background:linear-gradient(90deg,#F59E0B,#FBBF24);}
+#fs2 .card-accent-line{background:linear-gradient(90deg,#14B8A6,#34D399);}
+#fs3 .card-accent-line{background:linear-gradient(90deg,#818CF8,#A78BFA);}
+#fs4 .card-accent-line{background:linear-gradient(90deg,#FB7185,#F43F5E);}
+#fs5 .card-accent-line{background:linear-gradient(90deg,#22C55E,#34D399);}
+#fs6 .card-accent-line{background:linear-gradient(90deg,#A78BFA,#818CF8);}
+
+/* Card border glow — for white theme use subtle ring */
+.visual-card .card-border-glow{
+  position:absolute;inset:0;border-radius:28px;
+  pointer-events:none;z-index:0;
+  animation:borderPulse 3.2s ease-in-out infinite;
+}
+@keyframes borderPulse{0%,100%{opacity:.2;}50%{opacity:.6;}}
+#fs1 .card-border-glow{box-shadow:0 0 0 1.5px rgba(245,158,11,.2);}
+#fs2 .card-border-glow{box-shadow:0 0 0 1.5px rgba(20,184,166,.2);}
+#fs3 .card-border-glow{box-shadow:0 0 0 1.5px rgba(129,140,248,.2);}
+#fs4 .card-border-glow{box-shadow:0 0 0 1.5px rgba(251,113,133,.2);}
+#fs5 .card-border-glow{box-shadow:0 0 0 1.5px rgba(52,211,153,.2);}
+#fs6 .card-border-glow{box-shadow:0 0 0 1.5px rgba(167,139,250,.2);}
+
+/* Floating micro-dots */
+.card-dot{
+  position:absolute;border-radius:50%;pointer-events:none;
+  animation:dotFloat linear infinite;
+}
+@keyframes dotFloat{0%{transform:translateY(0) scale(1);opacity:.22;}50%{transform:translateY(-16px) scale(1.2);opacity:.5;}100%{transform:translateY(0) scale(1);opacity:.22;}}
+.visual-card svg{position:relative;z-index:2;}
+
+/* White-theme SVG text colors */
+.visual-card text{fill:rgba(10,15,44,0.5);}
+.visual-card text[fill^="rgba(240"],
+.visual-card text[fill^="rgba(240,244,255,0."]{fill:rgba(10,15,44,0.4);}
+
+/* ── Chat bubbles (white theme) ──────────────────────── */
+.chat-wrap{display:flex;flex-direction:column;gap:12px;width:100%;max-width:400px;position:relative;z-index:2;}
+.chat-bubble{
+  max-width:88%;padding:13px 17px;border-radius:18px;
+  font-size:0.83rem;line-height:1.65;
+  opacity:0;transform:translateX(-24px) scale(0.94);
+  transition:opacity .55s cubic-bezier(.16,1,.3,1),transform .55s cubic-bezier(.16,1,.3,1);
+}
+.chat-bubble.right{align-self:flex-end;transform:translateX(24px) scale(0.94);}
+.chat-bubble.visible-bubble{opacity:1;transform:translateX(0) scale(1)!important;}
+.chat-user{background:rgba(129,140,248,0.15);border:1px solid rgba(129,140,248,0.28);color:rgba(240,244,255,0.9);}
+.chat-ai{background:rgba(59,110,234,0.15);border:1px solid rgba(59,110,234,0.28);color:rgba(240,244,255,0.9);}
+
+
+/* ── Footer CTA ──────────────────────────────────────────── */
+#footer-cta{
+  position:relative;
+  padding:100px 24px;
+  text-align:center;
+  border-top:1px solid rgba(240,244,255,0.06);
+  overflow:hidden;
+}
+.footer-glow{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:600px;height:400px;
+  background:radial-gradient(ellipse, rgba(59,110,234,0.18) 0%, transparent 70%);
+  pointer-events:none;
+}
+.footer-h2{font-family:'Fraunces',serif;font-size:clamp(2rem,4vw,3rem);font-weight:700;letter-spacing:-0.03em;margin-bottom:14px;position:relative;}
+.footer-sub{color:rgba(240,244,255,0.52);font-size:0.95rem;margin-bottom:36px;position:relative;}
+.footer-btn{
+  background:#3B6EEA;color:#fff;
+  border:none;border-radius:12px;
+  padding:16px 36px;
+  font-family:'DM Sans',sans-serif;
+  font-size:1rem;font-weight:600;
+  box-shadow:0 0 36px rgba(59,110,234,0.4);
+  transition:all .2s;position:relative;
+}
+.footer-btn:hover{transform:translateY(-3px);box-shadow:0 6px 48px rgba(59,110,234,0.6);}
+.trust-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(240,244,255,0.04);
+  border:1px solid rgba(240,244,255,0.1);
+  border-radius:9999px;
+  padding:8px 18px;
+  font-size:0.78rem;
+  color:rgba(240,244,255,0.5);
+  margin-top:20px;position:relative;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media(max-width:768px){
+  #navbar{padding:0 24px;}
+  .feature-section{grid-template-columns:1fr;gap:36px;padding:60px 24px;}
+  .feature-section.reverse{direction:ltr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── CURSOR ─────────────────────────────────────────────── -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- ── NAVBAR ─────────────────────────────────────────────── -->
+<nav id="navbar">
+  <div class="nav-logo">
+    <div class="nav-logo-icon">₹</div>
+    <span class="nav-logo-text">Dinero</span>
+  </div>
+  <button class="btn-signin" onclick="window.location.href='login'">Sign In</button>
+</nav>
+
+<!-- ── HERO ───────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-bg"></div>
+
+  <!-- Field lines (parallax SVG layers) -->
+  <div class="hero-field-lines">
+    <div class="field-layer" id="field1">
+      <svg width="100%" height="100%" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <ellipse cx="600" cy="400" rx="520" ry="320" stroke="rgba(59,110,234,0.09)" stroke-width="1"/>
+        <ellipse cx="600" cy="400" rx="380" ry="220" stroke="rgba(59,110,234,0.07)" stroke-width="1"/>
+        <ellipse cx="600" cy="400" rx="240" ry="130" stroke="rgba(59,110,234,0.05)" stroke-width="1"/>
+        <line x1="80" y1="400" x2="1120" y2="400" stroke="rgba(59,110,234,0.05)" stroke-width="1"/>
+        <line x1="600" y1="40" x2="600" y2="760" stroke="rgba(59,110,234,0.05)" stroke-width="1"/>
+      </svg>
+    </div>
+    <div class="field-layer" id="field2">
+      <svg width="100%" height="100%" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <ellipse cx="600" cy="400" rx="480" ry="280" stroke="rgba(34,197,94,0.06)" stroke-width="1" stroke-dasharray="6 8"/>
+        <ellipse cx="600" cy="400" rx="320" ry="170" stroke="rgba(34,197,94,0.05)" stroke-width="1" stroke-dasharray="4 10"/>
+        <circle cx="200" cy="150" r="80" stroke="rgba(59,110,234,0.06)" stroke-width="1"/>
+        <circle cx="1000" cy="650" r="120" stroke="rgba(34,197,94,0.05)" stroke-width="1"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Particle Network Background -->
+  <div class="pnet-wrap" id="pnet-wrap">
+    <canvas id="pnet-canvas"></canvas>
+  </div>
+
+  <div class="hero-content">
+    <!-- Trust badge -->
+    <div class="trust-badge">
+      <span class="pulse-dot"></span>
+      Trusted by 50,000+ Indians
+    </div>
+
+    <!-- Headline -->
+    <h1 class="hero-h1">Welcome to <span class="green">Dinero</span></h1>
+
+    <!-- Subheadline -->
+    <p class="hero-sub">Your AI-powered personal finance mentor — built for everyday Indians who deserve professional-grade planning.</p>
+
+    <!-- CTAs -->
+    <div class="hero-ctas">
+      <button class="btn-primary" onclick="window.location.href='signup'">Get Started Free →</button>
+      <button class="btn-ghost" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">See how it works</button>
+    </div>
+
+
+  </div>
+  <!-- Hero bottom blend into next section -->
+  <div class="hero-fade-bottom"></div>
+</section>
+
+<!-- ── DARK→GREEN→WHITE BRIDGE ─────────────────────────── -->
+<div class="features-bridge"></div>
+
+<!-- ── FEATURE SECTIONS ─────────────────────────────────── -->
+<div id="features" class="features-wrap">
+<div class="features-inner">
+
+  <!-- 1. FIRE Path Planner (amber) -->
+  <div class="feature-section" id="fs1">
+    <div class="feature-text">
+      <span class="module-tag reveal-item" style="background:rgba(245,158,11,0.12);color:#F59E0B;border:1px solid rgba(245,158,11,0.25);">Module 01<span class="tag-shine"></span></span>
+      <h2 class="feature-h2 reveal-item" style="color:#B45309;">FIRE Path Planner</h2>
+      <p class="feature-desc reveal-item">Simulate wealth growth using compound interest. Get your personalised monthly SIP amount and see exactly when you reach financial freedom — with full inflation adjustment.</p>
+      <a class="feature-link reveal-item" href="signup" style="color:#F59E0B;"><span class="link-text">Explore module</span><span class="arrow">→</span></a>
+    </div>
+    <div class="feature-visual">
+      <div class="visual-card">
+        <div class="card-accent-line"></div>
+        <div class="card-shimmer"></div>
+        <div class="card-border-glow"></div>
+        <div class="card-dot" style="width:6px;height:6px;background:#F59E0B;left:12%;top:18%;animation-duration:4.2s;"></div>
+        <div class="card-dot" style="width:4px;height:4px;background:#F59E0B;left:78%;top:68%;animation-duration:5.8s;animation-delay:-2s;"></div>
+        <div class="card-dot" style="width:5px;height:5px;background:#22C55E;left:55%;top:12%;animation-duration:6.5s;animation-delay:-.8s;"></div>
+        <svg id="fire-svg" viewBox="0 0 300 160" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%">
+          <defs>
+            <linearGradient id="fireGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.28"/>
+              <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <line x1="20" y1="130" x2="290" y2="130" stroke="rgba(10,15,44,0.1)" stroke-width="1"/>
+          <line x1="20" y1="100" x2="290" y2="100" stroke="rgba(10,15,44,0.05)" stroke-width="1"/>
+          <line x1="20" y1="70" x2="290" y2="70" stroke="rgba(10,15,44,0.05)" stroke-width="1"/>
+          <line x1="20" y1="40" x2="290" y2="40" stroke="rgba(10,15,44,0.05)" stroke-width="1"/>
+          <path id="fire-area" d="M20,130 C60,125 100,115 140,98 C180,80 220,55 270,22 L270,130 Z" fill="url(#fireGrad)"/>
+          <path id="fire-path" d="M20,130 C60,125 100,115 140,98 C180,80 220,55 270,22"
+            stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"
+            stroke-dasharray="400" stroke-dashoffset="400"/>
+          <circle cx="270" cy="22" r="6" fill="#F59E0B" id="fire-dot" opacity="0"/>
+          <circle cx="270" cy="22" r="12" fill="rgba(245,158,11,0.2)" id="fire-dot-ring" opacity="0"/>
+          <rect x="220" y="4" width="72" height="20" rx="5" fill="rgba(245,158,11,0.18)" id="fire-label-bg" opacity="0"/>
+          <text x="256" y="17" fill="#F59E0B" font-size="10" font-weight="700" text-anchor="middle" font-family="DM Sans,sans-serif" id="fire-label-text" opacity="0">₹2.4 Cr</text>
+          <text x="20" y="148" fill="rgba(10,15,44,0.35)" font-size="9" font-family="DM Sans,sans-serif">2024</text>
+          <text x="140" y="148" fill="rgba(10,15,44,0.35)" font-size="9" text-anchor="middle" font-family="DM Sans,sans-serif">2034</text>
+          <text x="270" y="148" fill="rgba(10,15,44,0.35)" font-size="9" text-anchor="end" font-family="DM Sans,sans-serif">2044</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-sep"></div>
+
+  <!-- 2. Money Health Score (teal) — REVERSED -->
+  <div class="feature-section reverse" id="fs2">
+    <div class="feature-text">
+      <span class="module-tag reveal-item" style="background:rgba(20,184,166,0.12);color:#0D9488;border:1px solid rgba(20,184,166,0.25);">Module 02<span class="tag-shine"></span></span>
+      <h2 class="feature-h2 reveal-item" style="color:#0D9488;">Money Health Score</h2>
+      <p class="feature-desc reveal-item">Score your financial wellness across 6 deep dimensions — emergency fund coverage, insurance adequacy, debt ratio, tax efficiency, portfolio diversification, and retirement readiness.</p>
+      <a class="feature-link reveal-item" href="signup" style="color:#14B8A6;"><span class="link-text">Explore module</span><span class="arrow">→</span></a>
+    </div>
+    <div class="feature-visual">
+      <div class="visual-card" style="text-align:center;">
+        <div class="card-accent-line"></div>
+        <div class="card-shimmer"></div>
+        <div class="card-border-glow"></div>
+        <div class="card-dot" style="width:5px;height:5px;background:#14B8A6;left:8%;top:22%;animation-duration:5s;"></div>
+        <div class="card-dot" style="width:6px;height:6px;background:#14B8A6;left:82%;top:72%;animation-duration:4.5s;animation-delay:-1.5s;"></div>
+        <svg id="health-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" width="200" style="margin:0 auto;position:relative;z-index:2;">
+          <circle cx="100" cy="100" r="80" stroke="rgba(10,15,44,0.07)" stroke-width="14"/>
+          <circle id="health-arc" cx="100" cy="100" r="80"
+            stroke="#14B8A6" stroke-width="14"
+            stroke-linecap="round"
+            stroke-dasharray="502"
+            stroke-dashoffset="502"
+            transform="rotate(-90 100 100)"/>
+          <text x="100" y="92" text-anchor="middle" font-family="Fraunces,serif" font-size="42" font-weight="700" fill="#0A0F2C" id="health-score-num">0</text>
+          <text x="100" y="114" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(10,15,44,0.45)">out of 100</text>
+        </svg>
+        <div style="margin-top:16px;background:rgba(20,184,166,0.1);border:1px solid rgba(20,184,166,0.2);border-radius:8px;padding:8px 14px;font-size:0.8rem;color:#0D9488;font-weight:600;display:inline-block;position:relative;z-index:2;">
+          Good — 2 gaps found
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-sep"></div>
+
+  <!-- 3. Life Event Advisor (indigo) -->
+  <div class="feature-section" id="fs3">
+    <div class="feature-text">
+      <span class="module-tag reveal-item" style="background:rgba(129,140,248,0.12);color:#6366F1;border:1px solid rgba(129,140,248,0.25);">Module 03<span class="tag-shine"></span></span>
+      <h2 class="feature-h2 reveal-item" style="color:#4F46E5;">Life Event Advisor</h2>
+      <p class="feature-desc reveal-item">Tailored allocation strategies for every major financial trigger — job changes, bonuses, inheritance, marriage, and more. Claude builds a custom playbook for your exact situation.</p>
+      <a class="feature-link reveal-item" href="signup" style="color:#6366F1;"><span class="link-text">Explore module</span><span class="arrow">→</span></a>
+    </div>
+    <div class="feature-visual">
+      <div class="visual-card">
+        <div class="card-accent-line"></div>
+        <div class="card-shimmer"></div>
+        <div class="card-border-glow"></div>
+        <div class="card-dot" style="width:5px;height:5px;background:#818CF8;left:14%;top:15%;animation-duration:5.5s;"></div>
+        <div class="card-dot" style="width:4px;height:4px;background:#818CF8;left:80%;top:65%;animation-duration:6.8s;animation-delay:-3s;"></div>
+        <svg id="life-svg" viewBox="0 0 300 120" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%">
+          <line id="tl-line" x1="40" y1="60" x2="260" y2="60" stroke="rgba(10,15,44,0.12)" stroke-width="2" stroke-dasharray="6 5"/>
+          <circle id="tl-n1" cx="40" cy="60" r="18" fill="rgba(129,140,248,0.12)" stroke="rgba(129,140,248,0.4)" stroke-width="1.5" opacity="0"/>
+          <text x="40" y="65" text-anchor="middle" font-size="16" id="tl-e1" opacity="0">💼</text>
+          <text x="40" y="90" text-anchor="middle" fill="rgba(240,244,255,0.4)" font-size="9" font-family="DM Sans,sans-serif" id="tl-l1" opacity="0">Job Switch</text>
+          <circle id="tl-n2" cx="150" cy="60" r="18" fill="rgba(129,140,248,0.12)" stroke="#818CF8" stroke-width="1.5" opacity="0"/>
+          <text x="150" y="65" text-anchor="middle" font-size="16" id="tl-e2" opacity="0">💍</text>
+          <text x="150" y="90" text-anchor="middle" fill="rgba(240,244,255,0.4)" font-size="9" font-family="DM Sans,sans-serif" id="tl-l2" opacity="0">Marriage</text>
+          <circle id="tl-n3" cx="260" cy="60" r="18" fill="rgba(129,140,248,0.18)" stroke="#818CF8" stroke-width="2" opacity="0"/>
+          <text x="260" y="65" text-anchor="middle" font-size="16" id="tl-e3" opacity="0">🎯</text>
+          <text x="260" y="90" text-anchor="middle" fill="rgba(240,244,255,0.4)" font-size="9" font-family="DM Sans,sans-serif" id="tl-l3" opacity="0">Bonus</text>
+          <rect x="100" y="20" width="100" height="18" rx="9" fill="rgba(129,140,248,0.12)" id="tl-pill" opacity="0"/>
+          <text x="150" y="31" text-anchor="middle" fill="#818CF8" font-size="9" font-weight="600" font-family="DM Sans,sans-serif" id="tl-pill-text" opacity="0">Your next milestone</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-sep"></div>
+
+  <!-- 4. Tax Optimizer (rose) — REVERSED -->
+  <div class="feature-section reverse" id="fs4">
+    <div class="feature-text">
+      <span class="module-tag reveal-item" style="background:rgba(251,113,133,0.12);color:#E11D48;border:1px solid rgba(251,113,133,0.25);">Module 04<span class="tag-shine"></span></span>
+      <h2 class="feature-h2 reveal-item" style="color:#E11D48;">Tax Optimizer</h2>
+      <p class="feature-desc reveal-item">Stop overpaying. Compare old vs new regime side-by-side, surface every 80C / 80D / HRA / NPS gap you're missing, and calculate your exact annual savings in seconds.</p>
+      <a class="feature-link reveal-item" href="signup" style="color:#FB7185;"><span class="link-text">Explore module</span><span class="arrow">→</span></a>
+    </div>
+    <div class="feature-visual">
+      <div class="visual-card">
+        <div class="card-accent-line"></div>
+        <div class="card-shimmer"></div>
+        <div class="card-border-glow"></div>
+        <div class="card-dot" style="width:5px;height:5px;background:#FB7185;left:10%;top:20%;animation-duration:4.8s;"></div>
+        <div class="card-dot" style="width:4px;height:4px;background:#22C55E;left:76%;top:60%;animation-duration:6s;animation-delay:-2.5s;"></div>
+        <svg id="tax-svg" viewBox="0 0 280 160" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%">
+          <line x1="40" y1="130" x2="250" y2="130" stroke="rgba(10,15,44,0.12)" stroke-width="1"/>
+          <line x1="40" y1="100" x2="250" y2="100" stroke="rgba(10,15,44,0.05)" stroke-width="1" stroke-dasharray="3 4"/>
+          <line x1="40" y1="70" x2="250" y2="70" stroke="rgba(10,15,44,0.05)" stroke-width="1" stroke-dasharray="3 4"/>
+          <rect id="tax-bar1" x="75" y="130" width="50" height="0" rx="4" fill="#FB7185"/>
+          <text x="100" y="148" text-anchor="middle" fill="rgba(240,244,255,0.4)" font-size="9" font-family="DM Sans,sans-serif">Old Regime</text>
+          <text id="tax-label1" x="100" y="40" text-anchor="middle" fill="#FB7185" font-size="10" font-weight="700" font-family="DM Sans,sans-serif" opacity="0">₹1.8L tax</text>
+          <rect id="tax-bar2" x="155" y="130" width="50" height="0" rx="4" fill="#22C55E"/>
+          <text x="180" y="148" text-anchor="middle" fill="rgba(240,244,255,0.4)" font-size="9" font-family="DM Sans,sans-serif">New Regime</text>
+          <text id="tax-label2" x="180" y="68" text-anchor="middle" fill="#22C55E" font-size="10" font-weight="700" font-family="DM Sans,sans-serif" opacity="0">₹1.2L tax</text>
+          <rect id="tax-badge" x="95" y="8" width="90" height="24" rx="12" fill="rgba(34,197,94,0.15)" stroke="rgba(34,197,94,0.3)" stroke-width="1" opacity="0"/>
+          <text id="tax-badge-text" x="140" y="21" text-anchor="middle" fill="#22C55E" font-size="10" font-weight="700" font-family="DM Sans,sans-serif" opacity="0">Save ₹60K</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-sep"></div>
+
+  <!-- 5. Portfolio X-Ray (emerald) -->
+  <div class="feature-section" id="fs5">
+    <div class="feature-text">
+      <span class="module-tag reveal-item" style="background:rgba(52,211,153,0.12);color:#059669;border:1px solid rgba(52,211,153,0.25);">Module 05<span class="tag-shine"></span></span>
+      <h2 class="feature-h2 reveal-item" style="color:#059669;">Portfolio X-Ray</h2>
+      <p class="feature-desc reveal-item">Go deep on your mutual fund portfolio. XIRR calculation, overlap detection across funds, expense ratio impact analysis, and intelligent rebalancing suggestions — all automated.</p>
+      <a class="feature-link reveal-item" href="signup" style="color:#22C55E;"><span class="link-text">Explore module</span><span class="arrow">→</span></a>
+    </div>
+    <div class="feature-visual">
+      <div class="visual-card" style="position:relative;">
+        <div class="card-accent-line"></div>
+        <div class="card-shimmer"></div>
+        <div class="card-border-glow"></div>
+        <div class="card-dot" style="width:5px;height:5px;background:#34D399;left:8%;top:18%;animation-duration:5.2s;"></div>
+        <div class="card-dot" style="width:4px;height:4px;background:#3B6EEA;left:82%;top:72%;animation-duration:6.2s;animation-delay:-2s;"></div>
+        <div style="position:absolute;top:12px;right:12px;background:rgba(52,211,153,0.15);border:1px solid rgba(52,211,153,0.3);border-radius:9999px;padding:4px 10px;font-size:0.72rem;color:#34D399;font-weight:700;font-family:'DM Sans',sans-serif;z-index:3;">XIRR 14.2%</div>
+        <svg id="xray-svg" viewBox="0 0 280 160" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%">
+          <circle id="xray-c1" cx="110" cy="80" r="60" fill="rgba(52,211,153,0.12)" stroke="rgba(52,211,153,0.4)" stroke-width="1.5" opacity="0"/>
+          <circle id="xray-c2" cx="170" cy="80" r="60" fill="rgba(59,110,234,0.12)" stroke="rgba(59,110,234,0.4)" stroke-width="1.5" opacity="0"/>
+          <clipPath id="overlapClip"><circle cx="170" cy="80" r="60"/></clipPath>
+          <circle id="xray-overlap" cx="110" cy="80" r="60" fill="rgba(240,244,255,0.06)" clip-path="url(#overlapClip)" opacity="0"/>
+          <text id="xray-l1" x="85" y="75" text-anchor="middle" fill="rgba(52,211,153,0.9)" font-size="9" font-family="DM Sans,sans-serif" opacity="0">Fund A</text>
+          <text id="xray-l1b" x="85" y="88" text-anchor="middle" fill="rgba(240,244,255,0.35)" font-size="8" font-family="DM Sans,sans-serif" opacity="0">Nifty 50</text>
+          <text id="xray-l2" x="195" y="75" text-anchor="middle" fill="rgba(59,110,234,0.9)" font-size="9" font-family="DM Sans,sans-serif" opacity="0">Fund B</text>
+          <text id="xray-l2b" x="195" y="88" text-anchor="middle" fill="rgba(240,244,255,0.35)" font-size="8" font-family="DM Sans,sans-serif" opacity="0">Flex Cap</text>
+          <text id="xray-lo" x="140" y="84" text-anchor="middle" fill="rgba(240,244,255,0.6)" font-size="9" font-weight="700" font-family="DM Sans,sans-serif" opacity="0">38%</text>
+          <text id="xray-lo2" x="140" y="96" text-anchor="middle" fill="rgba(240,244,255,0.3)" font-size="8" font-family="DM Sans,sans-serif" opacity="0">overlap</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-sep"></div>
+
+  <!-- 6. AI Financial Advisor (violet) — REVERSED -->
+  <div class="feature-section reverse" id="fs6">
+    <div class="feature-text">
+      <span class="module-tag reveal-item" style="background:rgba(167,139,250,0.12);color:#7C3AED;border:1px solid rgba(167,139,250,0.25);">Module 06<span class="tag-shine"></span></span>
+      <h2 class="feature-h2 reveal-item" style="color:#6D28D9;">AI Financial Advisor</h2>
+      <p class="feature-desc reveal-item">Conversational AI mentor powered by Claude — answers every finance question using your real profile as context. No generic advice. Your numbers, your situation, your answer.</p>
+      <a class="feature-link reveal-item" href="signup" style="color:#A78BFA;"><span class="link-text">Explore module</span><span class="arrow">→</span></a>
+    </div>
+    <div class="feature-visual">
+      <div class="visual-card">
+        <div class="card-accent-line"></div>
+        <div class="card-shimmer"></div>
+        <div class="card-border-glow"></div>
+        <div class="card-dot" style="width:5px;height:5px;background:#A78BFA;left:12%;top:16%;animation-duration:5.6s;"></div>
+        <div class="card-dot" style="width:4px;height:4px;background:#A78BFA;left:80%;top:70%;animation-duration:7s;animation-delay:-2.8s;"></div>
+        <div class="chat-wrap" id="chat-wrap">
+          <div class="chat-bubble chat-user" id="cb1">Should I increase my SIP this month?</div>
+          <div class="chat-bubble chat-ai right" id="cb2">Based on your ₹85K income and 18% savings rate, increasing by ₹3,000/mo moves your FIRE date 14 months closer. ✓</div>
+          <div class="chat-bubble chat-user" id="cb3">Which fund should I add it to?</div>
+          <div class="chat-bubble chat-ai right" id="cb-typing" style="padding:10px 16px;opacity:0;transform:translateX(24px) scale(0.94);">
+            <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /features-inner -->
+</div><!-- /features-wrap -->
+
+<div class="section-sep"></div>
+
+<!-- ── FOOTER CTA ──────────────────────────────────────────── -->
+<section id="footer-cta">
+  <div class="footer-glow"></div>
+  <h2 class="footer-h2">Start your financial journey today</h2>
+  <p class="footer-sub">Join 50,000+ Indians taking control of their money — for free.</p>
+  <button class="footer-btn" onclick="window.location.href='signup'">Create Free Account →</button>
+  <br/>
+  <span class="trust-pill">🔒 End-to-end encrypted · Your data never leaves India</span>
+</section>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   CURSOR SYSTEM
+═══════════════════════════════════════════════════════════════ */
+const dot  = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+
+document.addEventListener('mousemove', e=>{
+  mx=e.clientX; my=e.clientY;
+  dot.style.left=mx+'px'; dot.style.top=my+'px';
+});
+
+function lerpCursor(){
+  rx+=(mx-rx)*0.14; ry+=(my-ry)*0.14;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(lerpCursor);
+}
+lerpCursor();
+
+// Hover state
+document.querySelectorAll('a,button,[onclick]').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('cursor-hover'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('cursor-hover'));
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   FIREFLY SYSTEM
+═══════════════════════════════════════════════════════════════ */
+const FIREFLY_COLORS=['#3B6EEA','#22C55E','#F59E0B','#14B8A6','#818CF8'];
+const FIREFLY_COUNT=12;
+const flies=[];
+let ffMX=window.innerWidth/2, ffMY=window.innerHeight/2;
+let ffInWindow=false;
+
+for(let i=0;i<FIREFLY_COUNT;i++){
+  const el=document.createElement('div');
+  el.className='firefly';
+  const size=3+Math.random()*4;
+  const color=FIREFLY_COLORS[Math.floor(Math.random()*FIREFLY_COLORS.length)];
+  el.style.cssText=`width:${size}px;height:${size}px;background:${color};box-shadow:0 0 ${size*2.5}px ${color};`;
+  document.body.appendChild(el);
+  flies.push({
+    el, x:ffMX, y:ffMY,
+    lag:0.02+Math.random()*0.06,
+    freq:0.0008+Math.random()*0.0012,
+    amp:20+Math.random()*50,
+    phase:Math.random()*Math.PI*2,
+    opPhase:Math.random()*Math.PI*2,
+    opFreq:0.0005+Math.random()*0.0008,
+    color
+  });
+}
+
+document.addEventListener('mousemove', e=>{ffMX=e.clientX; ffMY=e.clientY;});
+document.addEventListener('mouseenter',()=>{ffInWindow=true; flies.forEach(f=>f.el.style.opacity='1');});
+document.addEventListener('mouseleave',()=>{ffInWindow=false; flies.forEach(f=>f.el.style.opacity='0');});
+
+let ffT=0;
+function animateFlies(){
+  ffT+=1;
+  flies.forEach(f=>{
+    const tx=ffMX + Math.cos(ffT*f.freq*1.3+f.phase)*f.amp;
+    const ty=ffMY + Math.sin(ffT*f.freq+f.phase)*f.amp*0.6;
+    f.x+=(tx-f.x)*f.lag;
+    f.y+=(ty-f.y)*f.lag;
+    f.el.style.left=f.x+'px';
+    f.el.style.top=f.y+'px';
+    if(ffInWindow){
+      const op=0.4+0.5*((Math.sin(ffT*f.opFreq+f.opPhase)+1)/2);
+      f.el.style.opacity=op.toFixed(3);
+    }
+  });
+  requestAnimationFrame(animateFlies);
+}
+animateFlies();
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO PARALLAX + 3D TILT + RIPPLE
+═══════════════════════════════════════════════════════════════ */
+const hero=document.getElementById('hero');
+const f1=document.getElementById('field1');
+const f2=document.getElementById('field2');
+let hW=hero.offsetWidth, hH=hero.offsetHeight;
+let hX=hW/2, hY=hH/2;
+
+hero.addEventListener('mousemove',e=>{
+  const r=hero.getBoundingClientRect();
+  hX=e.clientX-r.left; hY=e.clientY-r.top;
+  const nx=(hX/r.width-0.5), ny=(hY/r.height-0.5);
+  f1.style.transform=`translate(${nx*18}px,${ny*12}px)`;
+  f2.style.transform=`translate(${-nx*12}px,${-ny*8}px)`;
+  // Forward mouse to canvas system
+  pnetMouseX=hX; pnetMouseY=hY;
+});
+hero.addEventListener('mouseleave',()=>{
+  f1.style.transform=''; f2.style.transform='';
+});
+
+// Ripple
+hero.addEventListener('click',e=>{
+  const r=hero.getBoundingClientRect();
+  const rip=document.createElement('div');
+  rip.className='ripple-effect';
+  rip.style.left=(e.clientX-r.left)+'px';
+  rip.style.top=(e.clientY-r.top)+'px';
+  hero.appendChild(rip);
+  setTimeout(()=>rip.remove(),1000);
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   PARTICLE NETWORK CANVAS ANIMATION
+═══════════════════════════════════════════════════════════════ */
+(function(){
+  const canvas=document.getElementById('pnet-canvas');
+  const ctx=canvas.getContext('2d');
+
+  // Size canvas to hero dimensions
+  const heroEl=document.getElementById('hero');
+  let W=heroEl.offsetWidth||1470;
+  let H=heroEl.offsetHeight||835;
+  canvas.width=W; canvas.height=H;
+
+  window.addEventListener('resize',()=>{
+    W=heroEl.offsetWidth; H=heroEl.offsetHeight;
+    canvas.width=W; canvas.height=H;
+  });
+
+  // Brand accent colors for nodes
+  const NODE_COLORS=['#3B6EEA','#22C55E','#F59E0B','#14B8A6','#818CF8','#FB7185','#34D399'];
+  const NODE_COUNT=90;
+  const CONNECT_DIST=160;
+  const MOUSE_ATTRACT=120;
+
+  // Mouse tracked from hero mousemove (forwarded via global)
+  window.pnetMouseX=W/2;
+  window.pnetMouseY=H/2;
+  document.getElementById('hero').addEventListener('mousemove',e=>{
+    const r=e.currentTarget.getBoundingClientRect();
+    window.pnetMouseX=e.clientX-r.left;
+    window.pnetMouseY=e.clientY-r.top;
+  });
+
+  // Build nodes
+  const nodes=[];
+  for(let i=0;i<NODE_COUNT;i++){
+    const color=NODE_COLORS[Math.floor(Math.random()*NODE_COLORS.length)];
+    const r=1.5+Math.random()*2.8;
+    nodes.push({
+      x:Math.random()*W, y:Math.random()*H,
+      vx:(Math.random()-0.5)*0.4,
+      vy:(Math.random()-0.5)*0.4,
+      r, color,
+      oFreq:0.0002+Math.random()*0.0004,
+      oAmp:8+Math.random()*18,
+      oPhase:Math.random()*Math.PI*2,
+      pulsePhase:Math.random()*Math.PI*2,
+    });
+  }
+
+  let t=0;
+  function draw(){
+    t++;
+    ctx.clearRect(0,0,W,H);
+
+    const cmx=window.pnetMouseX;
+    const cmy=window.pnetMouseY;
+
+    // Move nodes
+    nodes.forEach(n=>{
+      const ox=Math.cos(t*n.oFreq+n.oPhase)*n.oAmp;
+      const oy=Math.sin(t*n.oFreq*1.3+n.oPhase)*n.oAmp*0.6;
+
+      const dx=cmx-n.x, dy=cmy-n.y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<MOUSE_ATTRACT && dist>1){
+        const force=((MOUSE_ATTRACT-dist)/MOUSE_ATTRACT)*0.014;
+        n.vx+=dx*force; n.vy+=dy*force;
+      }
+
+      const spd=Math.sqrt(n.vx*n.vx+n.vy*n.vy);
+      if(spd>0.75){n.vx*=0.75/spd; n.vy*=0.75/spd;}
+      n.vx*=0.994; n.vy*=0.994;
+      n.x+=n.vx+ox*0.012;
+      n.y+=n.vy+oy*0.012;
+
+      if(n.x<-20) n.x=W+20;
+      if(n.x>W+20) n.x=-20;
+      if(n.y<-20) n.y=H+20;
+      if(n.y>H+20) n.y=-20;
+    });
+
+    // Draw edges
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const a=nodes[i], b=nodes[j];
+        const dx=a.x-b.x, dy=a.y-b.y;
+        const d=Math.sqrt(dx*dx+dy*dy);
+        if(d<CONNECT_DIST){
+          const alpha=(1-d/CONNECT_DIST)*0.38;
+          const grad=ctx.createLinearGradient(a.x,a.y,b.x,b.y);
+          grad.addColorStop(0, hexAlpha(a.color,alpha));
+          grad.addColorStop(1, hexAlpha(b.color,alpha));
+          ctx.beginPath();
+          ctx.moveTo(a.x,a.y);
+          ctx.lineTo(b.x,b.y);
+          ctx.strokeStyle=grad;
+          ctx.lineWidth=0.75;
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw nodes
+    nodes.forEach(n=>{
+      const dx=cmx-n.x, dy=cmy-n.y;
+      const mdist=Math.sqrt(dx*dx+dy*dy);
+      const nearMouse=mdist<100;
+      const pulse=0.6+0.4*Math.sin(t*0.018+n.pulsePhase);
+      const rDraw=n.r*(nearMouse?2:1)*pulse;
+
+      ctx.shadowColor=n.color;
+      ctx.shadowBlur=nearMouse?16:5;
+      ctx.beginPath();
+      ctx.arc(n.x,n.y,rDraw,0,Math.PI*2);
+      ctx.fillStyle=hexAlpha(n.color, nearMouse ? 1 : 0.72*pulse);
+      ctx.fill();
+      ctx.shadowBlur=0;
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  function hexAlpha(hex,a){
+    const r=parseInt(hex.slice(1,3),16);
+    const g=parseInt(hex.slice(3,5),16);
+    const b=parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${Math.min(1,a).toFixed(3)})`;
+  }
+
+  draw();
+})();
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION REVEAL + ANIMATED VISUALS (IntersectionObserver)
+═══════════════════════════════════════════════════════════════ */
+const sections=document.querySelectorAll('.feature-section');
+const sectionObs=new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('visible');
+      resetSection(entry.target.id);
+      staggerReveal(entry.target);
+      setTimeout(()=>animateSection(entry.target.id), 100);
+    } else {
+      entry.target.classList.remove('visible');
+    }
+  });
+},{threshold:0.18});
+sections.forEach(s=>sectionObs.observe(s));
+
+/* Stagger text items + tag shimmer */
+function staggerReveal(section){
+  const items=section.querySelectorAll('.reveal-item');
+  items.forEach((el,i)=>{
+    setTimeout(()=>el.classList.add('shown'), i*110);
+  });
+  const tag=section.querySelector('.module-tag');
+  if(tag) setTimeout(()=>tag.classList.add('shining'), 120);
+}
+
+function resetSection(id){
+  const sec=document.getElementById(id);
+  if(sec){
+    sec.querySelectorAll('.reveal-item').forEach(el=>el.classList.remove('shown'));
+    const tag=sec.querySelector('.module-tag');
+    if(tag) tag.classList.remove('shining');
+  }
+  if(id==='fs1'){
+    const p=document.getElementById('fire-path'); if(p) p.setAttribute('stroke-dashoffset','400');
+    ['fire-dot','fire-dot-ring','fire-label-bg','fire-label-text'].forEach(i=>{ const e=document.getElementById(i); if(e) e.setAttribute('opacity','0'); });
+  }
+  if(id==='fs2'){
+    const a=document.getElementById('health-arc'); if(a) a.setAttribute('stroke-dashoffset','502');
+    const n=document.getElementById('health-score-num'); if(n) n.textContent='0';
+  }
+  if(id==='fs3'){
+    ['tl-n1','tl-e1','tl-l1','tl-n2','tl-e2','tl-l2','tl-n3','tl-e3','tl-l3','tl-pill','tl-pill-text']
+      .forEach(i=>{ const e=document.getElementById(i); if(e) e.setAttribute('opacity','0'); });
+  }
+  if(id==='fs4'){
+    const b1=document.getElementById('tax-bar1'),b2=document.getElementById('tax-bar2');
+    if(b1){b1.setAttribute('height','0');b1.setAttribute('y','130');}
+    if(b2){b2.setAttribute('height','0');b2.setAttribute('y','130');}
+    ['tax-label1','tax-label2','tax-badge','tax-badge-text'].forEach(i=>{ const e=document.getElementById(i); if(e) e.setAttribute('opacity','0'); });
+  }
+  if(id==='fs5'){
+    ['xray-c1','xray-c2','xray-overlap','xray-l1','xray-l1b','xray-l2','xray-l2b','xray-lo','xray-lo2']
+      .forEach(i=>{ const e=document.getElementById(i); if(e) e.setAttribute('opacity','0'); });
+  }
+  if(id==='fs6'){
+    ['cb1','cb2','cb3'].forEach(i=>{ const e=document.getElementById(i); if(e) e.classList.remove('visible-bubble'); });
+  }
+}
+
+function animateSection(id){
+  if(id==='fs1') animateFIRE();
+  if(id==='fs2') animateHealth();
+  if(id==='fs3') animateLife();
+  if(id==='fs4') animateTax();
+  if(id==='fs5') animateXRay();
+  if(id==='fs6') animateChat();
+}
+
+/* –– FIRE Line –––––––––––––––––––––––––––––––––––––––––––– */
+function animateFIRE(){
+  const path=document.getElementById('fire-path');
+  const dot=document.getElementById('fire-dot');
+  const dotR=document.getElementById('fire-dot-ring');
+  const lb=document.getElementById('fire-label-bg');
+  const lt=document.getElementById('fire-label-text');
+  let start=null, dur=1600;
+  function step(ts){
+    if(!start) start=ts;
+    const p=Math.min((ts-start)/dur,1);
+    const ease=1-Math.pow(1-p,3);
+    path.setAttribute('stroke-dashoffset',400*(1-ease));
+    if(p>0.75){
+      const op=(p-0.75)/0.25;
+      dot.setAttribute('opacity',op);
+      if(dotR) dotR.setAttribute('opacity',op*0.5);
+      lb.setAttribute('opacity',op); lt.setAttribute('opacity',op);
+    }
+    if(p<1) requestAnimationFrame(step);
+    else {
+      // Pulse the endpoint dot ring
+      if(dotR) setInterval(()=>{
+        dotR.style.transition='opacity .6s';
+        dotR.setAttribute('opacity','0.6');
+        setTimeout(()=>dotR.setAttribute('opacity','0.1'), 600);
+      }, 1200);
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+/* –– Health Arc + Count-up ––––––––––––––––––––––––––––––––– */
+function animateHealth(){
+  const arc=document.getElementById('health-arc');
+  const num=document.getElementById('health-score-num');
+  const total=502, target=total*0.22; // 78%
+  const targetScore=78;
+  let start=null, dur=1500;
+  function step(ts){
+    if(!start) start=ts;
+    const p=Math.min((ts-start)/dur,1);
+    const ease=1-Math.pow(1-p,3);
+    arc.setAttribute('stroke-dashoffset', total-(total-target)*ease);
+    if(num) num.textContent=Math.round(targetScore*ease);
+    if(p<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* –– Life Timeline ––––––––––––––––––––––––––––––––––––––– */
+function animateLife(){
+  const els=['tl-n1','tl-e1','tl-l1','tl-n2','tl-e2','tl-l2','tl-n3','tl-e3','tl-l3','tl-pill','tl-pill-text'];
+  els.forEach((id,i)=>{
+    setTimeout(()=>{
+      const el=document.getElementById(id);
+      if(el){
+        el.style.transition='opacity 0.45s';
+        el.setAttribute('opacity','1');
+      }
+    }, 120+i*130);
+  });
+}
+
+/* –– Tax Bars –––––––––––––––––––––––––––––––––––––––––––– */
+function animateTax(){
+  const b1=document.getElementById('tax-bar1');
+  const b2=document.getElementById('tax-bar2');
+  const l1=document.getElementById('tax-label1');
+  const l2=document.getElementById('tax-label2');
+  const badge=document.getElementById('tax-badge');
+  const badgeT=document.getElementById('tax-badge-text');
+  let start=null, dur=1000;
+  function step(ts){
+    if(!start) start=ts;
+    const p=Math.min((ts-start)/dur,1);
+    // bounce ease
+    const bounce=p<1?1-Math.pow(1-p,3)*(Math.cos(p*Math.PI*2.5)*0.15+1):1;
+    const ease=Math.min(1,bounce);
+    const h1=90*ease; b1.setAttribute('height',h1); b1.setAttribute('y',130-h1);
+    const p2=Math.min(Math.max((ts-start-200)/dur,0),1);
+    const ease2=1-Math.pow(1-p2,3);
+    const h2=62*ease2; b2.setAttribute('height',h2); b2.setAttribute('y',130-h2);
+    if(p>0.65){ l1.setAttribute('opacity',((p-0.65)/0.35).toFixed(2)); }
+    if(p2>0.65){ l2.setAttribute('opacity',((p2-0.65)/0.35).toFixed(2)); }
+    if(p===1 && p2>0.9){ badge.setAttribute('opacity','1'); badgeT.setAttribute('opacity','1'); }
+    if(p<1||p2<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* –– X-Ray Venn –––––––––––––––––––––––––––––––––––––––––– */
+function animateXRay(){
+  const ids=['xray-c1','xray-c2','xray-overlap','xray-l1','xray-l1b','xray-l2','xray-l2b','xray-lo','xray-lo2'];
+  ids.forEach((id,i)=>{
+    setTimeout(()=>{
+      const el=document.getElementById(id);
+      if(el){ el.style.transition='opacity 0.55s'; el.setAttribute('opacity','1'); }
+    }, i*110);
+  });
+}
+
+/* –– Chat Bubbles –––––––––––––––––––––––––––––––––––––––– */
+function animateChat(){
+  ['cb1','cb2','cb3'].forEach((id,i)=>{
+    setTimeout(()=>{
+      const el=document.getElementById(id);
+      if(el) el.classList.add('visible-bubble');
+    }, 200+i*550);
+  });
+  // Show typing indicator after last bubble
+  setTimeout(()=>{
+    const t=document.getElementById('cb-typing');
+    if(t) t.classList.add('visible-bubble');
+  }, 200+3*550);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INTERACTIVE HOVER DETECTION (for cursor)
+═══════════════════════════════════════════════════════════════ */
+// Re-run after DOM settles to catch dynamically created elements
+setTimeout(()=>{
+  document.querySelectorAll('a,button,[onclick]').forEach(el=>{
+    el.addEventListener('mouseenter',()=>document.body.classList.add('cursor-hover'));
+    el.addEventListener('mouseleave',()=>document.body.classList.remove('cursor-hover'));
+  });
+},500);
+</script>
+</body>
+</html>

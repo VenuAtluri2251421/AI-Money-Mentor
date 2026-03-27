@@ -17,7 +17,7 @@ RiskProfile = Literal["conservative", "moderate", "aggressive"]
 class UserCreate(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=8, description="Minimum 8 characters")
-    full_name: str = Field(..., min_length=1, max_length=255)
+    full_name: str = Field(default="", max_length=255)
 
 
 class UserRead(BaseModel):
