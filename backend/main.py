@@ -41,7 +41,7 @@ def create_app() -> FastAPI:
         title=settings.app_name,
         description=(
             "AI-powered personal finance platform — "
-            "SIP, FIRE, Tax, XIRR, Health Score & Artha AI Advisor (ET AI Hackathon 2026)"
+            "SIP, FIRE, Tax, XIRR, Health Score & Dinero AI Advisor (ET AI Hackathon 2026)"
         ),
         version="1.0.0",
         docs_url="/docs",

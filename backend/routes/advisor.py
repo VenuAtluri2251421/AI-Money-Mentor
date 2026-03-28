@@ -1,8 +1,8 @@
 """
-backend/routes/advisor.py — AI Financial Advisor endpoints (Artha / Gemini).
+backend/routes/advisor.py — AI Financial Advisor endpoints (Dinero / Gemini).
 
 Routes:
-  POST /advisor/chat    → Chat with Artha (Gemini)
+  POST /advisor/chat    → Chat with Dinero (Gemini)
   POST /advisor/extract → Extract structured profile from natural language
   POST /advisor/explain → Plain-English explanation of a financial insight
   POST /advisor/context → Build formatted user context string
@@ -33,7 +33,7 @@ from ai.context import build_user_context
 from backend.rate_limit import advisor_rate_limit
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/advisor", tags=["AI Advisor (Artha)"])
+router = APIRouter(prefix="/advisor", tags=["AI Advisor (Dinero)"])
 
 
 # ── /chat ─────────────────────────────────────────────────────────────────────
@@ -58,14 +58,14 @@ class ChatResponse(BaseModel):
     response: str
 
 
-@router.post("/chat", response_model=ChatResponse, summary="Chat with Artha — AI Finance Advisor",
+@router.post("/chat", response_model=ChatResponse, summary="Chat with Dinero — AI Finance Advisor",
              dependencies=[Depends(advisor_rate_limit)])
 async def advisor_chat(
     req: ChatRequest,
     current_user: Annotated[UserORM, Depends(get_current_user)],
 ) -> ChatResponse:
     """
-    Send a message to Artha. On any API failure returns a graceful HTTP 200 fallback
+    Send a message to Dinero. On any API failure returns a graceful HTTP 200 fallback
     — never returns HTTP 500.
     """
     try:
@@ -194,7 +194,7 @@ from fastapi.responses import StreamingResponse
 
 @router.post(
     "/chat/stream",
-    summary="Streaming chat with Artha (SSE)",
+    summary="Streaming chat with Dinero (SSE)",
     dependencies=[Depends(advisor_rate_limit)],
 )
 async def advisor_chat_stream(

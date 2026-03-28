@@ -1,7 +1,7 @@
 """
 ai/advisor.py
 
-Gemini integration for the Artha financial advisor. Lazy client init so the
+Gemini integration for the Dinero financial advisor. Lazy client init so the
 server doesn't fail at startup if GEMINI_API_KEY is missing — it fails at
 first request, which gives a clean 200 fallback instead of a 500 crash.
 """
@@ -154,7 +154,7 @@ def chat_with_advisor(
     conversation_history: list[dict],
 ) -> str:
     """
-    Send a message to Artha and return the reply text.
+    Send a message to Dinero and return the reply text.
 
     Normalises history roles from OpenAI format (assistant) to Gemini format (model)
     so callers don't need to know which SDK we're using.

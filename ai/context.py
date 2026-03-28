@@ -35,7 +35,7 @@ def build_user_context(profile: dict, calculated_results: dict) -> str:
     Format profile + calculator outputs into a concise context block for Gemini.
 
     Sections with no data are marked 'Not yet calculated' rather than omitted —
-    this signals to Artha that the data doesn't exist yet, vs the user not sending it.
+    this signals to Dinero that the data doesn't exist yet, vs the user not sending it.
     Missing keys use .get() with None fallback throughout to avoid KeyErrors on partial profiles.
 
     TODO: Add goals[] section once the goal-tracking feature is live.
