@@ -10,10 +10,13 @@ Routes:
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict, Field
+
+from backend.models.orm import UserORM
+from backend.security import get_current_user
 
 
 class LenientModel(BaseModel):
@@ -57,7 +60,10 @@ class ChatResponse(BaseModel):
 
 @router.post("/chat", response_model=ChatResponse, summary="Chat with Artha — AI Finance Advisor",
              dependencies=[Depends(advisor_rate_limit)])
-async def advisor_chat(req: ChatRequest) -> ChatResponse:
+async def advisor_chat(
+    req: ChatRequest,
+    current_user: Annotated[UserORM, Depends(get_current_user)],
+) -> ChatResponse:
     """
     Send a message to Artha. On any API failure returns a graceful HTTP 200 fallback
     — never returns HTTP 500.
@@ -82,7 +88,10 @@ class ExtractRequest(LenientModel):
 
 @router.post("/extract", summary="Extract Financial Profile from Natural Language",
              dependencies=[Depends(advisor_rate_limit)])
-async def advisor_extract(req: ExtractRequest) -> dict[str, Any]:
+async def advisor_extract(
+    req: ExtractRequest,
+    current_user: Annotated[UserORM, Depends(get_current_user)],
+) -> dict[str, Any]:
     """
     Parse free-form text and return a structured financial profile.
     Returns all-null dict on any failure — never returns HTTP 500.
@@ -119,7 +128,10 @@ class ExplainResponse(BaseModel):
 
 @router.post("/explain", response_model=ExplainResponse, summary="Explain a Financial Insight",
              dependencies=[Depends(advisor_rate_limit)])
-async def advisor_explain(req: ExplainRequest) -> ExplainResponse:
+async def advisor_explain(
+    req: ExplainRequest,
+    current_user: Annotated[UserORM, Depends(get_current_user)],
+) -> ExplainResponse:
     """
     Generate a plain-English (under 150 words) explanation of a financial insight.
     On any API failure returns a graceful HTTP 200 fallback.
@@ -158,7 +170,10 @@ class ContextResponse(BaseModel):
     summary="Build Formatted User Context String",
     dependencies=[Depends(advisor_rate_limit)],
 )
-async def advisor_context(req: ContextRequest) -> ContextResponse:
+async def advisor_context(
+    req: ContextRequest,
+    current_user: Annotated[UserORM, Depends(get_current_user)],
+) -> ContextResponse:
     """
     Build a concise (<500 token) context string from the user's profile and
     calculator results. Pass the returned `context` string to /advisor/chat
@@ -182,7 +197,10 @@ from fastapi.responses import StreamingResponse
     summary="Streaming chat with Artha (SSE)",
     dependencies=[Depends(advisor_rate_limit)],
 )
-async def advisor_chat_stream(req: ChatRequest):
+async def advisor_chat_stream(
+    req: ChatRequest,
+    current_user: Annotated[UserORM, Depends(get_current_user)],
+):
     """
     Server-Sent Events streaming version of /advisor/chat.
     Each Gemini chunk is sent as an SSE `data:` line.

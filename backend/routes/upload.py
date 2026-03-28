@@ -16,9 +16,12 @@ import io
 import logging
 import re
 from datetime import datetime
-from typing import Any
+from typing import Annotated, Any
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+
+from backend.models.orm import UserORM
+from backend.security import get_current_user
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/upload", tags=["File Upload & Parsing"])
@@ -113,6 +116,7 @@ def _parse_kfintech_row(cols: list[str]) -> dict | None:
 
 @router.post("/form16", summary="Parse Form 16 PDF and extract tax fields")
 async def upload_form16(
+    current_user: Annotated[UserORM, Depends(get_current_user)],
     file: UploadFile = File(...),
     password: str | None = Form(None, description="PDF password (for encrypted files)"),
 ) -> dict[str, Any]:
@@ -169,6 +173,7 @@ async def upload_form16(
 
 @router.post("/cams-statement", summary="Parse CAMS/KFintech Statement PDF")
 async def upload_cams_statement(
+    current_user: Annotated[UserORM, Depends(get_current_user)],
     file: UploadFile = File(...),
     password: str | None = Form(None, description="PDF password (for encrypted files)"),
 ) -> dict[str, Any]:
