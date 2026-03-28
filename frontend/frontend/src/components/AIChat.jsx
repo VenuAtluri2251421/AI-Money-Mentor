@@ -45,7 +45,8 @@ export default function AIChat({ profile }) {
     try {
       const token = localStorage.getItem('artha_token')
       // Note: adjust the URL if your backend runs on a different host/port
-      const res = await fetch('http://localhost:8000/api/v1/advisor/chat/stream', {
+      const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
+      const res = await fetch(`${API_BASE}/advisor/chat/stream`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -107,7 +108,7 @@ export default function AIChat({ profile }) {
           <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>Dinero Advisor</div>
           <div style={{ fontSize: '0.72rem', color: 'var(--green)', display: 'flex', alignItems: 'center', gap: 4 }}>
             <span style={{ width: 6, height: 6, background: 'var(--green)', borderRadius: '50%', display: 'inline-block' }} />
-            Online · Powered by Claude
+            Online · Powered by Gemini
           </div>
         </div>
       </div>
