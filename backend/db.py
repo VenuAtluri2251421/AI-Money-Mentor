@@ -38,6 +38,9 @@ if not settings.database_url.startswith("sqlite"):
     # Supabase Postgres works best with a small pool on the free tier (max 20 conns shared).
     engine_kwargs["pool_size"] = 5 if settings.using_supabase else 10
     engine_kwargs["max_overflow"] = 5
+    # Supabase Transaction Pooler uses pgbouncer which doesn't support prepared statements.
+    # Disable asyncpg's statement cache to avoid DuplicatePreparedStatementError.
+    engine_kwargs["connect_args"] = {"statement_cache_size": 0}
 
 engine = create_async_engine(
     settings.database_url,
