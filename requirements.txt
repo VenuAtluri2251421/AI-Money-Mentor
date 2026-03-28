@@ -29,8 +29,8 @@ httpx==0.27.0
 pdfplumber==0.11.0
 
 # Finance math
-scipy==1.13.0
-numpy==1.26.4
+scipy>=1.14.0
+numpy>=1.26.4
 
 # Auth & security
 python-jose[cryptography]==3.3.0
