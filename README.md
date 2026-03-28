@@ -6,8 +6,8 @@
 
 ## ✨ Features
 
-- **🤖 Artha AI Advisor**: A Gemini-powered AI chatbot that understands your specific financial context, risk appetite, and goals. Ask it for personalized investment strategies or plain-English explanations of complex financial jargon.
-- **📄 Smart PDF Extraction**: Upload your CAMS/KFintech mutual fund statements or Form 16s. Artha automatically parses the documents and constructs your financial profile without manual data entry.
+- **🤖 Dinero AI Advisor**: A Gemini-powered AI chatbot that understands your specific financial context, risk appetite, and goals. Ask it for personalized investment strategies or plain-English explanations of complex financial jargon.
+- **📄 Smart PDF Extraction**: Upload your CAMS/KFintech mutual fund statements or Form 16s. Dinero automatically parses the documents and constructs your financial profile without manual data entry.
 - **🧮 Advanced Financial Calculators**:
   - **SIP & Reverse SIP Calculators**: Plan your wealth accumulation journey.
   - **FIRE Engine**: Calculate your "Financial Independence, Retire Early" number and exactly how many years it will take to get there.
@@ -27,7 +27,7 @@
 
 ### Backend
 - **FastAPI (Python)**: High-performance asynchronous backend.
-- **Google Gemini 2.5 Flash / Pro**: The brain behind Artha's AI advisor and PDF data structuring.
+- **Google Gemini 2.5 Flash / Pro**: The brain behind Dinero's AI advisor and PDF data structuring.
 - **pdfplumber**: Used for high-fidelity extraction of tabular and localized text from PDFs.
 - **Supabase (PostgreSQL)**: Scalable, serverless database for secure user and portfolio storage.
 
@@ -35,7 +35,7 @@
 
 ## 🚀 Deployment (Railway)
 
-Artha is configured out-of-the-box to be deployed on **Railway** as a monorepo.
+Dinero is configured out-of-the-box to be deployed on **Railway** as a monorepo.
 
 ### 1. Database Setup
 1. Create a project in [Supabase](https://supabase.com).
